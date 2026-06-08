@@ -38,16 +38,14 @@ in {
   python312 = prev.python312.override {
     packageOverrides = pyFinal: pyPrev:
       {
-        # Replace pkg_resources usage in hyperopt/atpe.py with importlib.resources
-        # to eliminate the setuptools deprecation warning on Python 3.12+.
+        # Silence the pkg_resources deprecation warning in hyperopt/atpe.py.
+        # We only patch the import line; resource_string itself is left intact
+        # because the call site varies across patch releases.
         hyperopt = pyPrev.hyperopt.overridePythonAttrs (old: {
           postPatch = (old.postPatch or "") + ''
             substituteInPlace hyperopt/atpe.py \
               --replace-fail 'import pkg_resources' \
-                             'import importlib.resources' \
-              --replace-fail \
-                "pkg_resources.resource_string(__name__, 'atpe_params.json')" \
-                "importlib.resources.files('hyperopt').joinpath('atpe_params.json').read_bytes()"
+                'import warnings as _w; _w.filterwarnings("ignore", message="pkg_resources is deprecated", category=UserWarning); import pkg_resources'
           '';
         });
       }
