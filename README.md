@@ -44,13 +44,13 @@ trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDS
 
 ```bash
 # 进入 ML shell，退出后环境完全消失
-nix shell github:YOUR_ORG/gpu-cluster
+nix shell github:Ic-arbon/wise-gpucluster
 ```
 
 ### 开发 shell（含 uv、git 等工具）
 
 ```bash
-nix develop github:YOUR_ORG/gpu-cluster
+nix develop github:Ic-arbon/wise-gpucluster
 ```
 
 ### 验证
@@ -65,7 +65,7 @@ python -c "import torch, botorch, gpytorch; print(torch.__version__, torch.cuda.
 
 ```nix
 # flake.nix inputs:
-inputs.ml-env.url = "github:YOUR_ORG/gpu-cluster";
+inputs.ml-env.url = "github:Ic-arbon/wise-gpucluster";
 
 # configuration.nix — 按需选择：
 # 全局暴露（适合所有用户都是 ML 用户的机器）：
