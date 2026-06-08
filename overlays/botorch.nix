@@ -1,10 +1,6 @@
-# Overlay: ensure botorch is available regardless of nixpkgs channel state.
+# Overlay: ensure botorch is available and silence hyperopt deprecation warnings.
 #
-# Priority order:
-#   1. Use nixpkgs botorch if it exists and is not broken.
-#   2. Fall back to a minimal buildPythonPackage sourced from PyPI.
-#
-# To update the fallback version:
+# To update the botorch fallback version:
 #   nix-prefetch-url --unpack https://files.pythonhosted.org/packages/source/b/botorch/botorch-X.Y.Z.tar.gz
 # Paste the resulting hash into `fallbackHash` below.
 
@@ -12,9 +8,6 @@ final: prev:
 let
   fallbackVersion = "0.12.0";
   fallbackHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-  # ↑ Replace with real hash. Get it by running:
-  #   nix-prefetch-url --unpack \
-  #     https://files.pythonhosted.org/packages/source/b/botorch/botorch-${fallbackVersion}.tar.gz
 
   botorchFallback = prev.python312Packages.buildPythonPackage rec {
     pname = "botorch";
@@ -36,21 +29,30 @@ let
       linear-operator
     ];
 
-    # Tests require GPU; skip in build sandbox.
     doCheck = false;
 
     pythonImportsCheck = [ "botorch" ];
   };
 
 in {
-  # Override the python312 package set so all downstream consumers see botorch.
   python312 = prev.python312.override {
     packageOverrides = pyFinal: pyPrev:
-      if pyPrev ? botorch
-      then { }               # nixpkgs already has it — nothing to do
-      else { botorch = botorchFallback; };
+      {
+        # Replace pkg_resources usage in hyperopt/atpe.py with importlib.resources
+        # to eliminate the setuptools deprecation warning on Python 3.12+.
+        hyperopt = pyPrev.hyperopt.overridePythonAttrs (old: {
+          postPatch = (old.postPatch or "") + ''
+            substituteInPlace hyperopt/atpe.py \
+              --replace-fail 'import pkg_resources' \
+                             'import importlib.resources' \
+              --replace-fail \
+                "pkg_resources.resource_string(__name__, 'atpe_params.json')" \
+                "importlib.resources.files('hyperopt').joinpath('atpe_params.json').read_bytes()"
+          '';
+        });
+      }
+      // (if pyPrev ? botorch then { } else { botorch = botorchFallback; });
   };
 
-  # Keep python312Packages in sync with the overridden python312.
   python312Packages = final.python312.pkgs;
 }
