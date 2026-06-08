@@ -8,9 +8,10 @@
   #   列入 trusted-substituters（或将用户加入 trusted-users），否则 Nix 会忽略
   #   flake 自带的 substituters 并仅用系统默认值。
   nixConfig = {
-    extra-substituters = [
+    substituters = [
       "https://mirror.sjtu.edu.cn/nix-channels/store"
       "https://cuda-maintainers.cachix.org"
+      "https://cache.nixos.org/"
     ];
     extra-trusted-public-keys = [
       "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
