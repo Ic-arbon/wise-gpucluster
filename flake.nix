@@ -37,7 +37,7 @@
           overlays = [ (import ./overlays/botorch.nix) ];
         };
 
-        mlPython = pkgs.python3.withPackages (ps: with ps; [
+        mlPython = pkgs.python312.withPackages (ps: with ps; [
           torch
           torchvision
           scikit-learn

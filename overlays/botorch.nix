@@ -16,19 +16,19 @@ let
   #   nix-prefetch-url --unpack \
   #     https://files.pythonhosted.org/packages/source/b/botorch/botorch-${fallbackVersion}.tar.gz
 
-  botorchFallback = prev.python3Packages.buildPythonPackage rec {
+  botorchFallback = prev.python312Packages.buildPythonPackage rec {
     pname = "botorch";
     version = fallbackVersion;
     pyproject = true;
 
-    src = prev.python3Packages.fetchPypi {
+    src = prev.python312Packages.fetchPypi {
       inherit pname version;
       hash = fallbackHash;
     };
 
-    build-system = with prev.python3Packages; [ setuptools wheel ];
+    build-system = with prev.python312Packages; [ setuptools wheel ];
 
-    dependencies = with prev.python3Packages; [
+    dependencies = with prev.python312Packages; [
       torch
       gpytorch
       scipy
@@ -43,14 +43,14 @@ let
   };
 
 in {
-  # Override the python3 package set so all downstream consumers see botorch.
-  python3 = prev.python3.override {
+  # Override the python312 package set so all downstream consumers see botorch.
+  python312 = prev.python312.override {
     packageOverrides = pyFinal: pyPrev:
       if pyPrev ? botorch
       then { }               # nixpkgs already has it — nothing to do
       else { botorch = botorchFallback; };
   };
 
-  # Keep python3Packages in sync with the overridden python3.
-  python3Packages = final.python3.pkgs;
+  # Keep python312Packages in sync with the overridden python312.
+  python312Packages = final.python312.pkgs;
 }
