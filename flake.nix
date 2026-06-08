@@ -73,7 +73,7 @@
             python -c "import torch;    print(' torch      ', torch.__version__)"
             python -c "import sklearn;  print(' sklearn    ', sklearn.__version__)"
             python -c "import optuna;   print(' optuna     ', optuna.__version__)"
-            python -c "import hyperopt; print(' hyperopt   ok')"
+            python -c "import hyperopt; print(' hyperopt   ', hyperopt.__version__)"
             python -c "import gpytorch; print(' gpytorch   ', gpytorch.__version__)"
             python -c "import botorch;  print(' botorch    ', botorch.__version__)"
             echo "──────────────────────────────────────────"
