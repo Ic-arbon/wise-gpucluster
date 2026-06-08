@@ -1,6 +1,22 @@
 {
   description = "Shared ML environment: ANN + Bayesian Optimization (PyTorch + CUDA)";
 
+  # ── Binary cache (国内加速) ────────────────────────────────────────────────
+  # 顺序：USTC 镜像(普通包) → cuda-maintainers(CUDA 包) → 官方(兜底)。
+  # 注意：USTC 是 cache.nixos.org 的镜像，签名仍是 nixos 的 key，故无需额外 key。
+  # 生效前提：用户的 ~/.config/nix/nix.conf 或 /etc/nix/nix.conf 需把这些 URL
+  #   列入 trusted-substituters（或将用户加入 trusted-users），否则 Nix 会忽略
+  #   flake 自带的 substituters 并仅用系统默认值。
+  nixConfig = {
+    extra-substituters = [
+      "https://mirror.sjtu.edu.cn/nix-channels/store"
+      "https://cuda-maintainers.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
+    ];
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";

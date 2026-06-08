@@ -16,11 +16,25 @@ Nix flake — reproducible ML environment for ANN + Bayesian Optimization.
 
 ## 管理员（一次性配置）
 
-### 1. 安装 Nix（multi-user daemon 模式）
+### 1. 安装 Nix
 
-```bash
-curl -L https://nixos.org/nix/install | sh -s -- --daemon
+需要支持 flakes 的 Nix。推荐用 [Determinate Systems 安装器](https://github.com/DeterminateSystems/nix-installer)，它默认开启 flakes，且卸载干净：
+
+```sh
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
 ```
+
+装完后**重开一个终端**，验证：
+
+```sh
+nix --version
+```
+
+> 如果你用的是官方安装器，需要手动开启 flakes，在 `~/.config/nix/nix.conf` 写入：
+> ```
+> experimental-features = nix-command flakes
+> ```
+
 
 ### 2. 启用 flakes 和 CUDA 二进制缓存
 
